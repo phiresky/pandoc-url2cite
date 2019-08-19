@@ -4,18 +4,18 @@
 
 import pandoc, { EltMap, Elt } from "pandoc-filter";
 import * as fs from "fs";
-
 import cjs from "citation-js";
 
-const citationCachePath = "citation-cache.json";
+const citationCachePath = "citation-cache.json"; // written to CWD from which pandoc is called
 
+// type of the citation-cache.json file
 let cache: { [url: string]: { fetched: string; bibtex: string; csl: any } } = {};
 
 async function getCslForUrl(url: string) {
 	// uses zotero extractors from https://github.com/zotero/translators to get information from URLs
 	// https://www.mediawiki.org/wiki/Citoid/API
 	// it should be possible to run a citoid or [zotero translation-server](https://github.com/zotero/translation-server) locally,
-	// but this works fine for now
+	// but this works fine for now and is much less fragile than trying to run that server in e.g. docker automatically.
 	console.warn("fetching citation from url", url);
 	const res = await fetch(`https://en.wikipedia.org/api/rest_v1/data/citation/bibtex/${encodeURIComponent(url)}`);
 
@@ -30,7 +30,7 @@ async function getCslForUrl(url: string) {
 	if (cbb.data.length !== 1) throw Error("got != 1 bibtex entries: " + bibtex);
 	cbb.data[0].id = url;
 	const [csl] = cbb.get({ format: "real", type: "json", style: "csl" });
-	delete csl._graph;
+	delete csl._graph; // unnecessary
 
 	return { fetched: new Date().toJSON(), bibtex, csl };
 }
@@ -40,6 +40,9 @@ async function getCslForUrlCached(url: string) {
 	cache[url] = await getCslForUrl(url);
 }
 
+/**
+ * transform the pandoc document AST to fetch missing citations
+ */
 async function astTransformer<A extends keyof EltMap>(
 	key: A,
 	value: EltMap[A],
@@ -64,7 +67,7 @@ async function astTransformer<A extends keyof EltMap>(
 /** `.meta` in the pandoc json format describes the markdown frontmatter yaml as an AST as described in
  *  https://hackage.haskell.org/package/pandoc-types-1.12.4.1/docs/Text-Pandoc-Definition.html#t:MetaValue
  *
- * this function converts a raw object to a pandoc meta ast object
+ * this function converts a raw object to a pandoc meta AST object
  **/
 function toMeta(e: string | object | (string | object)[]): any {
 	if (Array.isArray(e)) {
@@ -89,10 +92,11 @@ async function go() {
 	// parse AST from stdin
 	const data = JSON.parse(fs.readFileSync(0, "utf8"));
 	const format = process.argv.length > 2 ? process.argv[2] : "";
+	// https://github.com/mvhenderson/pandoc-filter-node/issues/9
 	const res = await (pandoc as any).filterAsync(data, astTransformer, format);
-	console.error("got all citations");
+	console.warn(`got all ${Object.keys(cache).length} citations from URLs`);
 
-	// add all cached references to the frontmatter. pandoc-citeproc will handle unused keys.
+	// add all cached references to the frontmatter. pandoc-citeproc will handle (ignore) unused keys.
 	res.meta.references = toMeta(Object.entries(cache).map(([url, { csl }]) => csl));
 	fs.writeFileSync(citationCachePath, JSON.stringify(cache, null, "\t"));
 	process.stdout.write(JSON.stringify(res));
