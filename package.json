@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@types/node": "^12.6.9",
+    "citation-js": "^0.4.8",
+    "node-fetch": "^2.6.0",
+    "pandoc-filter": "^1.0.0",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  }
+}
