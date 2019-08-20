@@ -20,7 +20,7 @@ citekeys:
 
 This repo allows you to instantly and transparently cite most papers directly only given a single URL.
 
-You simply add a URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mandeley](https://www.mendeley.com/) or [Zotero](https://www.zotero.org/) and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
+You simply add an URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mandeley](https://www.mendeley.com/) or [Zotero](https://www.zotero.org/) and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
 
 # Minimal Example
 
@@ -71,7 +71,8 @@ To improve performance and to avoid problems if the API might be down in the fut
 
 # Limitations
 
-Currently, extracting the metadata from direct URLs of full text PDFs does not work, so you will need to use the URL of an overview / abstract page etc. I'm not sure why, since this does work in Zotero. [More info might be here](https://github.com/zotero/translation-server/issues/70).
+1. Currently, extracting the metadata from direct URLs of full text PDFs does not work, so you will need to use the URL of an overview / abstract page etc. I'm not sure why, since this does work in Zotero. [More info might be here](https://github.com/zotero/translation-server/issues/70).
+2. Currently, this filter only works if you use pandoc-citeproc, because the citations are written directly into the document metadata instead of into a bibtex file. If you want to use natbib or biblatex for citations, this filter currently won't work. Using citeproc has the disadvantage that it is somewhat less configurable than the "real" LaTeX citation text generators and the CSL language has some limitations. For example, the [bibtex "alpha"](https://www.overleaf.com/learn/latex/Bibtex_bibliography_styles) sometimes used in Germany can't be described in CSL.
 
 # Related Work (Longer Example)
 
