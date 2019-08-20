@@ -20,7 +20,7 @@ citekeys:
 
 This repo allows you to instantly and transparently cite most papers directly only given a single URL.
 
-You simply add a URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want.
+You simply add a URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mandeley](https://www.mendeley.com/) or [Zotero](https://www.zotero.org/) and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
 
 # Minimal Example
 
