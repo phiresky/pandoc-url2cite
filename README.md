@@ -67,6 +67,8 @@ If you're not familiar with writing papers in pandoc, you can refer to [e.g. thi
 
 url2cite is based on the work of the [Zotero](https://www.zotero.org/) authors. Zotero has a set of ["Translators"](https://www.zotero.org/support/dev/translators) that are able to extract citation info from a number of specific and general web pages. These translators are written in Javascript and run within the context of the given web site. They are made to be used from the Zotero Connector browser extension, but thankfully there is a standalone [Translation Server](https://github.com/zotero/translation-server) as well. To avoid the effort required to automatically start and manage this server locally, url2cite instead uses a publicly accessible instance of this server provided by Wikipedia with a [public REST API](https://www.mediawiki.org/wiki/Citoid/API).
 
+To improve performance and to avoid problems if the API might be down in the future, all citation data is cached (permanently) as bibtex as well as CSL to `citation-cache.json`.
+
 # Limitations
 
 Currently, extracting the metadata from direct URLs of full text PDFs does not work, so you will need to use the URL of an overview / abstract page etc. I'm not sure why, since this does work in Zotero. [More info might be here](https://github.com/zotero/translation-server/issues/70).
