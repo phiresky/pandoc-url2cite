@@ -1,14 +1,17 @@
 {
-  "dependencies": {
-    "@types/node": "^12.12.17",
-    "citation-js": "^0.4.10",
-    "node-fetch": "^2.6.0",
-    "pandoc-filter": "^1.0.0",
-    "ts-node": "^8.5.4",
-    "typescript": "^3.7.3"
-  },
-  "prettier": {
-    "tabWidth": 4,
-    "useTabs": true
-  }
+	"bin": {
+		"pandoc-url2cite": "./index.js"
+	},
+	"dependencies": {
+		"@types/node": "^12.12.17",
+		"citation-js": "^0.4.10",
+		"node-fetch": "^2.6.0",
+		"pandoc-filter": "^1.0.0",
+		"ts-node": "^8.5.4",
+		"typescript": "^3.7.3"
+	},
+	"prettier": {
+		"tabWidth": 4,
+		"useTabs": true
+	}
 }
