@@ -9,7 +9,9 @@ import cjs from "citation-js";
 const citationCachePath = "citation-cache.json"; // written to CWD from which pandoc is called
 
 // type of the citation-cache.json file
-let cache: { [url: string]: { fetched: string; bibtex: string; csl: any } } = {};
+let cache: {
+	[url: string]: { fetched: string; bibtex: string; csl: any };
+} = {};
 
 async function getCslForUrl(url: string) {
 	// uses zotero extractors from https://github.com/zotero/translators to get information from URLs
@@ -17,7 +19,11 @@ async function getCslForUrl(url: string) {
 	// it should be possible to run a citoid or [zotero translation-server](https://github.com/zotero/translation-server) locally,
 	// but this works fine for now and is much less fragile than trying to run that server in e.g. docker automatically.
 	console.warn("fetching citation from url", url);
-	const res = await fetch(`https://en.wikipedia.org/api/rest_v1/data/citation/bibtex/${encodeURIComponent(url)}`);
+	const res = await fetch(
+		`https://en.wikipedia.org/api/rest_v1/data/citation/bibtex/${encodeURIComponent(
+			url
+		)}`
+	);
 
 	if (!res.ok) {
 		throw `could not fetch citation from ${url}: ${await res.text()}`;
@@ -32,7 +38,8 @@ async function getCslForUrl(url: string) {
 		throw e;
 	}
 
-	if (cbb.data.length !== 1) throw Error("got != 1 bibtex entries: " + bibtex);
+	if (cbb.data.length !== 1)
+		throw Error("got != 1 bibtex entries: " + bibtex);
 	cbb.data[0].id = url;
 	const [csl] = cbb.get({ format: "real", type: "json", style: "csl" });
 	delete csl._graph; // unnecessary
@@ -47,8 +54,11 @@ async function getCslForUrlCached(url: string) {
 
 // meta information about document, mostly from markdown frontmatter
 type DocumentMeta = {
-	citekeys?: {t: "MetaMap", c: Record<string, {t: "MetaInlines", c: {t: "Str", c: string}[]}>}
-}
+	citekeys?: {
+		t: "MetaMap";
+		c: Record<string, { t: "MetaInlines"; c: { t: "Str"; c: string }[] }>;
+	};
+};
 /**
  * transform the pandoc document AST to fetch missing citations
  */
@@ -59,7 +69,7 @@ async function astTransformer<A extends keyof EltMap>(
 	meta: DocumentMeta
 ): Promise<undefined | Elt<keyof EltMap> | Array<Elt<keyof EltMap>>> {
 	if (key === "Cite") {
-		if(!meta.citekeys) throw Error("No citekeys in document meta");
+		if (!meta.citekeys) throw Error("No citekeys in document meta");
 		const citekeys = meta.citekeys.c;
 		const [citations, inline] = value as EltMap["Cite"];
 		for (const citation of citations) {
@@ -71,7 +81,7 @@ async function astTransformer<A extends keyof EltMap>(
 			citation.citationId = url;
 		}
 	}
-	if(key === "Link") {
+	if (key === "Link") {
 		console.error(value);
 	}
 	return undefined;
@@ -87,7 +97,8 @@ function toMeta(e: string | object | (string | object)[]): any {
 		return { t: "MetaList", c: e.map(x => toMeta(x)) };
 	}
 	// warning: information loss: can't tell if it was a number or string
-	if (typeof e === "string" || typeof e === "number") return { t: "MetaString", c: String(e) };
+	if (typeof e === "string" || typeof e === "number")
+		return { t: "MetaString", c: String(e) };
 	if (typeof e === "object") {
 		const m: any = {};
 		for (const [k, v] of Object.entries(e)) {
@@ -110,7 +121,9 @@ async function go() {
 	console.warn(`got all ${Object.keys(cache).length} citations from URLs`);
 
 	// add all cached references to the frontmatter. pandoc-citeproc will handle (ignore) unused keys.
-	res.meta.references = toMeta(Object.entries(cache).map(([url, { csl }]) => csl));
+	res.meta.references = toMeta(
+		Object.entries(cache).map(([url, { csl }]) => csl)
+	);
 	fs.writeFileSync(citationCachePath, JSON.stringify(cache, null, "\t"));
 	process.stdout.write(JSON.stringify(res));
 }
