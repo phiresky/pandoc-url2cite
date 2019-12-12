@@ -1,5 +1,5 @@
 ---
-title: "Automatic citation extraction from URLs."
+title: "Automatic citation extraction from URLs"
 author: |
     phiresky
 date: 2019-08-21
@@ -12,9 +12,9 @@ url2cite: all-links
 
 # Introduction
 
-This repo allows you to instantly and transparently cite most papers directly only given a single URL.
+pandoc-url2cite allows you to instantly and transparently cite most papers directly given only a single URL.
 
-You simply add an URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mendeley](https://www.mendeley.com/) or [Zotero][zotero] and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
+You simply add a URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mendeley](https://www.mendeley.com/) or [Zotero][zotero] and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
 
 # Minimal Example
 
@@ -38,7 +38,7 @@ Compiling this file with this command
 pandoc --filter=pandoc-url2cite \
     --filter=pandoc-citeproc \
     minimal.md \
-    --csl ieee.csl \
+    --csl ieee-with-url.csl \
     -o minimal.pdf
 ```
 
@@ -104,7 +104,7 @@ All citation data is cached (permanently) as bibtex as well as CSL to `citation-
     To make it work with biblatex, this script would need to write out a \*.bib file somewhere temporarily and reference that in the latex code.
 
 3. Some websites just have wrong meta information. For example, citationstyles.org has set "Your Name" as the website author in their [Open Graph](https://ogp.me/) metadata.
-4. Using URLs directly as citekeys (e.g. `[@https://google.com]` does not work because of pandoc parsing, see [this issue](https://github.com/jgm/pandoc-citeproc/issues/308)
+4. Using URLs directly as citekeys (e.g. `[@https://google.com]` does not work because of pandoc parsing, see [this issue](https://github.com/jgm/pandoc-citeproc/issues/308). But it does work for DOIs: `As shown in [@doi:10.1037/a0028240]...`!
 
 # Related Work (Longer Example)
 
