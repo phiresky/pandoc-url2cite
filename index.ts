@@ -152,6 +152,12 @@ function writeCache() {
 }
 
 async function go() {
+	if (["--help", "--version", "-h", "-v"].includes(process.argv[2])) {
+		const { version, homepage } = require("./package.json");
+		console.error(`pandoc-url2cite v${version}`);
+		console.error(homepage);
+		return;
+	}
 	try {
 		cache = JSON.parse(fs.readFileSync(citationCachePath, "utf8"));
 	} catch {}

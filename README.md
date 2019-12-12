@@ -58,9 +58,26 @@ For a slightly longer example, you can look at this readme itself: [Source READM
 
 # How to Use
 
-Clone [this repo](https://github.com/phiresky/pandoc-url2cite) somewhere, then install the dependencies using `npm ci install`. Then, add `--filter=pandoc-url2cite/index.js` to your pandoc command (before pandoc-citeproc).
+Install this package globally using `npm install -g pandoc-url2cite`.
+
+Then, add `--filter=pandoc-url2cite` to your pandoc command (before pandoc-citeproc).
+
+Alternatively, clone [this repo](https://github.com/phiresky/pandoc-url2cite) somewhere, then install the dependencies using `npm ci install`.
 
 If you're not familiar with writing papers in pandoc, you can refer to [e.g. this article](https://opensource.com/article/18/9/pandoc-research-paper). It's pretty flexible, you can use templates from whatever conference you want, and you can still use inline latex code if you need it (and you are ok with not being able to convert your document to nice HTML or EPUB anymore).
+
+## How to cite
+
+url2cite allows multiple ways to cite:
+
+1. (PREFERRED) Use the pandoc citation syntax for citations
+
+    Put a unique citation key in brackets with an @ before:
+    `[@alexnet] first introduced CNNs to the ImageNet challenge.`
+
+    Then add the
+
+    More information is in the [pandoc manual](https://pandoc.org/MANUAL.html#citations).
 
 # How it Works
 
