@@ -4,7 +4,7 @@
 	"homepage": "https://github.com/phiresky/pandoc-url2cite",
 	"main": "dist/index.js",
 	"bin": {
-		"pandoc-url2cite": "dist/index.js"
+		"pandoc-url2cite": "dist/pandoc-url2cite.js"
 	},
 	"dependencies": {
 		"@types/node": "^12.12.17",
