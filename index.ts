@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /// <reference path="untyped.d.ts" />
 
 import cjs from "citation-js";
