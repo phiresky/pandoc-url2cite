@@ -24,8 +24,13 @@ async function getCslForUrl(url: string) {
 	}
 	const bibtex = await res.text();
 
-	// Citoid does not have CSL output, so convert bibtex to CSL JSON format
-	const cbb = new cjs(bibtex);
+	try {
+		// Citoid does not have CSL output, so convert bibtex to CSL JSON format
+		var cbb = new cjs(bibtex);
+	} catch (e) {
+		console.warn("could not parse bibtex: ", bibtex);
+		throw e;
+	}
 
 	if (cbb.data.length !== 1) throw Error("got != 1 bibtex entries: " + bibtex);
 	cbb.data[0].id = url;
@@ -40,6 +45,10 @@ async function getCslForUrlCached(url: string) {
 	cache[url] = await getCslForUrl(url);
 }
 
+// meta information about document, mostly from markdown frontmatter
+type DocumentMeta = {
+	citekeys?: {t: "MetaMap", c: Record<string, {t: "MetaInlines", c: {t: "Str", c: string}[]}>}
+}
 /**
  * transform the pandoc document AST to fetch missing citations
  */
@@ -47,9 +56,10 @@ async function astTransformer<A extends keyof EltMap>(
 	key: A,
 	value: EltMap[A],
 	format: string,
-	meta: any
+	meta: DocumentMeta
 ): Promise<undefined | Elt<keyof EltMap> | Array<Elt<keyof EltMap>>> {
 	if (key === "Cite") {
+		if(!meta.citekeys) throw Error("No citekeys in document meta");
 		const citekeys = meta.citekeys.c;
 		const [citations, inline] = value as EltMap["Cite"];
 		for (const citation of citations) {
@@ -60,6 +70,9 @@ async function astTransformer<A extends keyof EltMap>(
 			// replace the citation id with the url
 			citation.citationId = url;
 		}
+	}
+	if(key === "Link") {
+		console.error(value);
 	}
 	return undefined;
 }
@@ -73,7 +86,7 @@ function toMeta(e: string | object | (string | object)[]): any {
 	if (Array.isArray(e)) {
 		return { t: "MetaList", c: e.map(x => toMeta(x)) };
 	}
-	// information loss: can't tell if it was a number or string
+	// warning: information loss: can't tell if it was a number or string
 	if (typeof e === "string" || typeof e === "number") return { t: "MetaString", c: String(e) };
 	if (typeof e === "object") {
 		const m: any = {};
