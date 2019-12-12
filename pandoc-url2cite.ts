@@ -17,7 +17,7 @@ async function go() {
 	let data = JSON.parse(fs.readFileSync(0, "utf8"));
 	const format = process.argv.length > 2 ? process.argv[2] : "";
 
-	data = u2c.transform(data, format);
+	data = await u2c.transform(data, format);
 
 	process.stdout.write(JSON.stringify(data));
 }
