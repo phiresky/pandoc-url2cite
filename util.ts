@@ -1,7 +1,7 @@
 import { Inline, Block, stringify, FilterAction, Format } from "pandoc-filter";
 
 /** meta information about document, mostly from markdown frontmatter
- * https://hackage.haskell.org/package/pandoc-types-1.12.4.1/docs/Text-Pandoc-Definition.html#t:MetaValue
+ * https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html#t:MetaValue
  */
 export type PandocMetaValue =
 	| { t: "MetaMap"; c: PandocMetaMap }
@@ -13,7 +13,7 @@ export type PandocMetaValue =
 export type PandocMetaMap = Record<string, PandocMetaValue>;
 
 /** `.meta` in the pandoc json format describes the markdown frontmatter yaml as an AST as described in
- *  https://hackage.haskell.org/package/pandoc-types-1.12.4.1/docs/Text-Pandoc-Definition.html#t:MetaValue
+ *  https://hackage.haskell.org/package/pandoc-types-1.20/docs/Text-Pandoc-Definition.html#t:MetaValue
  *
  * this function converts a raw object to a pandoc meta AST object
  **/
@@ -63,11 +63,11 @@ export function makeTransformer(
 	trafo: (
 		el: AnyElt,
 		outputFormat: Format,
-		meta: MetaRecord
-	) => Promise<AnyElt | AnyElt[] | undefined>
+		meta: () => MetaRecord
+	) => Promise<AnyElt | AnyElt[] | void>
 ) {
 	return (t: any, c: any, format: Format, meta: PandocMetaMap) =>
-		trafo({ c, t }, format, fromMetaMap(meta));
+		trafo({ c, t }, format, () => fromMetaMap(meta));
 }
 
 export function isURL(s: string) {

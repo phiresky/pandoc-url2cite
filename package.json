@@ -1,6 +1,6 @@
 {
 	"name": "pandoc-url2cite",
-	"version": "0.5.5",
+	"version": "0.5.8",
 	"homepage": "https://github.com/phiresky/pandoc-url2cite",
 	"main": "dist/index.js",
 	"bin": {
@@ -10,7 +10,9 @@
 		"@types/node": "^12.12.17",
 		"citation-js": "^0.4.10",
 		"node-fetch": "^2.6.0",
-		"pandoc-filter": "^1.0.0",
+		"pandoc-filter": "^1.0.0"
+	},
+	"devDependencies": {
 		"ts-node": "^8.5.4",
 		"typescript": "^3.7.3"
 	},
@@ -21,5 +23,9 @@
 	"types": "dist/index.d.ts",
 	"files": [
 		"dist"
-	]
+	],
+	"scripts": {
+		"prepare": "npm run build",
+		"build": "tsc"
+	}
 }

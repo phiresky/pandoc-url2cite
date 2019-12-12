@@ -7,11 +7,6 @@ date: 2019-08-21
 #     This is the abstract. The system is great.
 link-citations: true
 urlcolor: blue
-citekeys:
-    vgg: https://arxiv.org/abs/1409.1556
-    googlenet: https://ieeexplore.ieee.org/document/7298594
-    resnet: https://ieeexplore.ieee.org/document/7780459
-    gan: https://papers.nips.cc/paper/5423-generative-adversarial-nets
 url2cite: all-links
 ---
 
@@ -28,22 +23,19 @@ Here is a minimal example:
 **minimal.md**
 
 ```{.markdown .number-lines}
----
-citekeys:
-    gan: https://papers.nips.cc/paper/5423-generative-adversarial-nets
----
-
 # Introduction
 
 The GAN was first introduced in [@gan].
 
 # References
+
+[@gan]: https://papers.nips.cc/paper/5423-generative-adversarial-nets
 ```
 
 Compiling this file with this command
 
 ```bash
-pandoc --filter=pandoc-url2cite/index.js \
+pandoc --filter=pandoc-url2cite \
     --filter=pandoc-citeproc \
     minimal.md \
     --csl ieee.csl \
@@ -52,39 +44,57 @@ pandoc --filter=pandoc-url2cite/index.js \
 
 This results in the following output:  
 **minimal.pdf**  
-![](example/minimal.png)
+[![](example/minimal.png)](example/minimal.pdf)
 
-For a slightly longer example, you can look at this readme itself: [Source README.md](https://raw.githubusercontent.com/phiresky/pandoc-url2cite/master/README.md "no-url2cite") - [Result README.pdf](https://github.com/phiresky/pandoc-url2cite/blob/master/README.pdf "no-url2cite")
+For a slightly longer example, you can look at this readme itself:  
+**README.pdf**  
+[![](example/readme.png)](README.pdf)
+
+[Source README.md](https://raw.githubusercontent.com/phiresky/pandoc-url2cite/master/README.md "no-url2cite") - [Result README.pdf](https://github.com/phiresky/pandoc-url2cite/blob/master/README.pdf "no-url2cite")
 
 # How to Use
 
 Install this package globally using `npm install -g pandoc-url2cite`.
 
-Then, add `--filter=pandoc-url2cite` to your pandoc command (before pandoc-citeproc).
+Then, add `--filter=pandoc-url2cite` to your pandoc command (before pandoc-citeproc, see the minimal example above).
 
 Alternatively, clone [this repo](https://github.com/phiresky/pandoc-url2cite) somewhere, then install the dependencies using `npm ci install`.
 
 If you're not familiar with writing papers in pandoc, you can refer to [e.g. this article](https://opensource.com/article/18/9/pandoc-research-paper). It's pretty flexible, you can use templates from whatever conference you want, and you can still use inline latex code if you need it (and you are ok with not being able to convert your document to nice HTML or EPUB anymore).
 
-## How to cite
+## Citation Syntax
 
 url2cite allows multiple ways to cite:
 
-1. (PREFERRED) Use the pandoc citation syntax for citations
+1. (PREFERRED) Use the pandoc citation syntax for citations:
 
-    Put a unique citation key in brackets with an @ before:
-    `[@alexnet] first introduced CNNs to the ImageNet challenge.`
+    `The authors of [@alexnet] first introduced CNNs to the ImageNet challenge.`
 
-    Then add the
+    More information about referencing specific pages etc. is in the [pandoc manual](https://pandoc.org/MANUAL.html#citations).
 
-    More information is in the [pandoc manual](https://pandoc.org/MANUAL.html#citations).
+    Then add the URLs with the usual "link reference" syntax to the bottom of your document in its own paragraph:
+
+    `[@alexnet]: https://...`
+
+2. Convert all links to citations
+
+    Add `url2cite: all-links` to your [yaml front matter](https://pandoc.org/MANUAL.html#extension-yaml_metadata_block). This will cause all links in the document to be converted to references.
+
+    You can still blacklist some links by adding `no-url2cite` to either the CSS class of the link (pandoc-only):
+
+    `[foo](http://example.com){.no-url2cite}`
+
+    or to the link title:
+
+    `[foo](http://example.com "no-url2cite")`.
 
 # How it Works
 
-The main idea is that usually, every piece of research you might want to cite is already identifiable by an URL.
+The main idea is that usually every piece of research you might want to cite is already fully identifiable by an URL - no need to manually enter metadata like author, release date, journal, etc. Citation managers like Zotero already use this and enable you to automatically fetch metadata from a website. But then you still have a citation database somewhere that you may or may not be able to synchronize with different computers, but probably won't be able to add to the version control of your paper. There's hacks such as [better-bibtex](https://github.com/retorquere/zotero-better-bibtex) to automatically generate and update diffable bibtex files, but that means you now have two sources of truth, and since it's one-way only leads to multiple contributors overriding each other's citations.
+
 url2cite is based on the work of the [Zotero] authors. Zotero has a set of ["Translators"](https://www.zotero.org/support/dev/translators) that are able to extract citation info from a number of specific and general web pages. These translators are written in Javascript and run within the context of the given web site. They are made to be used from the Zotero Connector browser extension, but thankfully there is a standalone [Translation Server](https://github.com/zotero/translation-server) as well. To avoid the effort required to automatically start and manage this server locally, url2cite instead uses a publicly accessible instance of this server provided by Wikipedia with a [public REST API](https://www.mediawiki.org/wiki/Citoid/API).
 
-All citation data is cached (permanently) as bibtex as well as CSL to `citation-cache.json`. This is both to improve performance and make sure references stay the same forever after the initial fetch, as well as to avoid problems if the API might be down in the future. This also means that errors in the citation data can be fixed manually, although if you find you need to do a lot of manual tweaking you might again be better off with Zotero.
+All citation data is cached (permanently) as bibtex as well as CSL to `citation-cache.json`. This is both to improve performance and to make sure references stay the same forever after the initial fetch, as well as to avoid problems if the API might be down in the future. This also means that errors in the citation data can be fixed manually, although if you find you need to do a lot of manual tweaking you might again be better off with Zotero.
 
 # Limitations
 
@@ -104,3 +114,6 @@ All citation data is cached (permanently) as bibtex as well as CSL to `citation-
 
 [alexnet]: http://dl.acm.org/citation.cfm?doid=3098997.3065386
 [zotero]: https://www.zotero.org/
+[@vgg]: https://arxiv.org/abs/1409.1556
+[@googlenet]: https://ieeexplore.ieee.org/document/7298594
+[@resnet]: https://ieeexplore.ieee.org/document/7780459
