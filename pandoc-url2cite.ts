@@ -20,6 +20,7 @@ async function go() {
 	data = await u2c.transform(data, format);
 
 	process.stdout.write(JSON.stringify(data));
+	// fs.writeFileSync("/tmp/o.json", JSON.stringify(data, null, "\t"));
 }
 
 go().catch(e => {

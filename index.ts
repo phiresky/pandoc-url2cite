@@ -2,8 +2,17 @@
 
 import cjs from "citation-js";
 import * as fs from "fs";
-import pandoc, { Cite, Elt, Format, Link, Space } from "pandoc-filter";
-import { isURL, makeTransformer, toMeta } from "./util";
+import {
+	Cite,
+	Elt,
+	Format,
+	Link,
+	Space,
+	filterAsync,
+	FilterAction,
+	FilterActionAsync
+} from "pandoc-filter";
+import { isURL, toMeta, fromMetaMap } from "./util";
 
 /** type of the citation-cache.json file */
 type Cache = {
@@ -88,7 +97,7 @@ export class Url2Cite {
 	// we convert them ourselves. This leads to small inconsistencies in what you can do vs. in normal reference definitions:
 	// 1. They need to be in their own paragraph.
 	// 2. link title is not parsed (but also would not be used anyways)
-	extractCiteKeys = makeTransformer(async (el, _outputFormat, _meta) => {
+	extractCiteKeys: FilterActionAsync = async (el, _outputFormat, _meta) => {
 		if (el.t === "Para") {
 			while (
 				el.c.length >= 3 &&
@@ -115,13 +124,13 @@ export class Url2Cite {
 			}
 			return el;
 		}
-	});
+	};
 	/**
 	 * transform the pandoc document AST
 	 * - replaces links with citations if `all-links` is active or they are marked with `url2cite` class/title
 	 * - replaces citekeys with urls, fetches missing citations and writes them to cache
 	 */
-	astTransformer = makeTransformer(async (el, _outputFormat, getMeta) => {
+	astTransformer: FilterActionAsync = async (el, _outputFormat, m) => {
 		if (el.t === "Cite") {
 			const [citations, _inline] = el.c;
 			for (const citation of citations) {
@@ -135,7 +144,7 @@ export class Url2Cite {
 				citation.citationId = url;
 			}
 		} else if (el.t === "Link") {
-			const meta = getMeta();
+			const meta = fromMetaMap(m);
 			if (meta.url2cite && typeof meta.url2cite !== "string")
 				throw Error("unsupported value of url2cite");
 			const [[id, classes, kv], inline, [url, targetTitle]] = el.c;
@@ -184,20 +193,12 @@ export class Url2Cite {
 				return e;
 			}
 		}
-	});
+	};
 
 	async transform(data: any, format: Format) {
 		// untyped https://github.com/mvhenderson/pandoc-filter-node/issues/9
-		data = await (pandoc as any).filterAsync(
-			data,
-			this.extractCiteKeys,
-			format
-		);
-		data = await (pandoc as any).filterAsync(
-			data,
-			this.astTransformer,
-			format
-		);
+		data = await filterAsync(data, this.extractCiteKeys, format);
+		data = await filterAsync(data, this.astTransformer, format);
 		console.warn(
 			`got all ${Object.keys(this.cache.urls).length} citations from URLs`
 		);

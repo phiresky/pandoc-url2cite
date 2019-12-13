@@ -57,19 +57,6 @@ export function fromMetaMap(c: PandocMetaMap): MetaRecord {
 	return fromMeta({ t: "MetaMap", c }) as any;
 }
 
-type AnyElt = Inline | Block;
-/** pandoc-filter-node api is slightly ugly for Typescript */
-export function makeTransformer(
-	trafo: (
-		el: AnyElt,
-		outputFormat: Format,
-		meta: () => MetaRecord
-	) => Promise<AnyElt | AnyElt[] | void>
-) {
-	return (t: any, c: any, format: Format, meta: PandocMetaMap) =>
-		trafo({ c, t }, format, () => fromMetaMap(meta));
-}
-
 export function isURL(s: string) {
 	// dumb test but should be good enough, can't handle missing protocol anyways
 	return /^https?:\/\/|^doi:/.test(s);
