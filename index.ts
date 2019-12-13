@@ -10,9 +10,11 @@ import {
 	Space,
 	filterAsync,
 	FilterAction,
-	FilterActionAsync
+	FilterActionAsync,
+	rawToMeta,
+	metaMapToRaw
 } from "pandoc-filter";
-import { isURL, toMeta, fromMetaMap } from "./util";
+import { isURL } from "./util";
 
 /** type of the citation-cache.json file */
 type Cache = {
@@ -144,7 +146,7 @@ export class Url2Cite {
 				citation.citationId = url;
 			}
 		} else if (el.t === "Link") {
-			const meta = fromMetaMap(m);
+			const meta = metaMapToRaw(m);
 			if (meta.url2cite && typeof meta.url2cite !== "string")
 				throw Error("unsupported value of url2cite");
 			const [[id, classes, kv], inline, [url, targetTitle]] = el.c;
@@ -203,7 +205,7 @@ export class Url2Cite {
 			`got all ${Object.keys(this.cache.urls).length} citations from URLs`
 		);
 		// add all cached references to the frontmatter. pandoc-citeproc will handle (ignore) unused keys.
-		data.meta.references = toMeta(
+		data.meta.references = rawToMeta(
 			Object.entries(this.cache.urls).map(([url, { csl }]) => csl)
 		);
 		return data;
