@@ -82,14 +82,6 @@
     "@citation-js/name" "^0.4.2"
     wikidata-sdk "7"
 
-"@phiresky/pandoc-filter@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@phiresky/pandoc-filter/-/pandoc-filter-2.0.0.tgz#b6bb01a0183a0f8aa6ae38f08067a52f5b1336f5"
-  integrity sha512-1bVr7VIffdpVfAm0L9U79WZMwvVVPmsy+teAhyIC9UJLAEf8LcPs7wt2YMmlyGEtWmH1+ex75GZQUwFXc53hfQ==
-  dependencies:
-    "@types/node" "^12.12.17"
-    get-stdin "~0.1.0"
-
 "@types/concat-stream@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@types/concat-stream/-/concat-stream-1.6.0.tgz#394dbe0bb5fee46b38d896735e8b68ef2390d00d"
@@ -317,6 +309,14 @@ node-fetch@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+
+"pandoc-filter@npm:@phiresky/pandoc-filter@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@phiresky/pandoc-filter/-/pandoc-filter-2.0.0.tgz#b6bb01a0183a0f8aa6ae38f08067a52f5b1336f5"
+  integrity sha512-1bVr7VIffdpVfAm0L9U79WZMwvVVPmsy+teAhyIC9UJLAEf8LcPs7wt2YMmlyGEtWmH1+ex75GZQUwFXc53hfQ==
+  dependencies:
+    "@types/node" "^12.12.17"
+    get-stdin "~0.1.0"
 
 parse-cache-control@^1.0.1:
   version "1.0.1"
