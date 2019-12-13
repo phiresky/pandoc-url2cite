@@ -10,7 +10,7 @@
 		"@types/node": "^12.12.17",
 		"citation-js": "^0.4.10",
 		"node-fetch": "^2.6.0",
-		"pandoc-filter": "^1.0.0"
+		"@phiresky/pandoc-filter": "^2.0.0"
 	},
 	"devDependencies": {
 		"ts-node": "^8.5.4",

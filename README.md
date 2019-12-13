@@ -2,7 +2,7 @@
 title: "Automatic citation extraction from URLs"
 author: |
     phiresky
-date: 2019-08-21
+date: 2019-12-13
 # abstract: |
 #     This is the abstract. The system is great.
 link-citations: true
@@ -10,9 +10,7 @@ urlcolor: blue
 url2cite: all-links
 ---
 
-# Introduction
-
-pandoc-url2cite allows you to instantly and transparently cite most papers directly given only a single URL.
+[pandoc-url2cite][repo] allows you to instantly and transparently cite most papers directly given only a single URL.
 
 You simply add a URL of a publication, and it will replace that with a real citation in whatever [CSL](https://citationstyles.org/) style you want. This means you can avoid dealing with [Mendeley](https://www.mendeley.com/) or [Zotero][zotero] and keeping your Reference Manager database and bibtex file in sync, especially when collaborating with others.
 
@@ -35,22 +33,22 @@ The GAN was first introduced in [@gan].
 Compiling this file with this command
 
 ```bash
-pandoc --filter=pandoc-url2cite \
-    --filter=pandoc-citeproc \
-    minimal.md \
+pandoc \
+    --filter=pandoc-url2cite --filter=pandoc-citeproc \
     --csl ieee-with-url.csl \
-    -o minimal.pdf
+    minimal.md -o minimal.pdf
 ```
 
 This results in the following output:  
 **minimal.pdf**  
-[![](example/minimal.png)](example/minimal.pdf)
+[![](https://github.com/phiresky/pandoc-url2cite/raw/master/example/minimal.png)](https://github.com/phiresky/pandoc-url2cite/blob/master/example/minimal.pdf)
 
-For a slightly longer example, you can look at this readme itself:  
+For a longer example, you can look at the source of this file itself, which is both a blog post, GitHub Readme and LaTeX "paper":
+
 **README.pdf**  
-[![](example/readme.png)](README.pdf)
+[![](https://github.com/phiresky/pandoc-url2cite/raw/master/example/readme.png)][pdf]
 
-[Source README.md](https://raw.githubusercontent.com/phiresky/pandoc-url2cite/master/README.md "no-url2cite") - [Result README.pdf](https://github.com/phiresky/pandoc-url2cite/blob/master/README.pdf "no-url2cite")
+[Source README.md](https://raw.githubusercontent.com/phiresky/pandoc-url2cite/master/README.md "no-url2cite") - [Result README.pdf][pdf]
 
 # How to Use
 
@@ -58,7 +56,7 @@ Install this package globally using `npm install -g pandoc-url2cite`.
 
 Then, add `--filter=pandoc-url2cite` to your pandoc command (before pandoc-citeproc, see the minimal example above).
 
-Alternatively, clone [this repo](https://github.com/phiresky/pandoc-url2cite) somewhere, then install the dependencies using `npm ci install`.
+Alternatively, clone [this repo][repo] somewhere, then install the dependencies using `npm ci install`.
 
 If you're not familiar with writing papers in pandoc, you can refer to [e.g. this article](https://opensource.com/article/18/9/pandoc-research-paper). It's pretty flexible, you can use templates from whatever conference you want, and you can still use inline latex code if you need it (and you are ok with not being able to convert your document to nice HTML or EPUB anymore).
 
@@ -112,6 +110,8 @@ All citation data is cached (permanently) as bibtex as well as CSL to `citation-
 
 # References
 
+[repo]: https://github.com/phiresky/pandoc-url2cite
+[pdf]: https://github.com/phiresky/pandoc-url2cite/blob/master/README.pdf "no-url2cite"
 [alexnet]: http://dl.acm.org/citation.cfm?doid=3098997.3065386
 [zotero]: https://www.zotero.org/
 [@vgg]: https://arxiv.org/abs/1409.1556
