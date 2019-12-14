@@ -98,6 +98,124 @@
 				"title": "Generative Adversarial Nets",
 				"type": "chapter"
 			}
+		},
+		"isbn:978-0374533557": {
+			"fetched": "2019-12-14T11:53:10.146Z",
+			"bibtex": [
+				"",
+				"@book{kahneman_daniel_1934-_thinking_nodate,",
+				"   address = {New York},",
+				"   edition = {1st ed},",
+				"   title = {Thinking, fast and slow},",
+				"   isbn = {9780374275631, 0374275637, 9780374533557, 0374533555, 9780606275644, 9780141033570, 0606275649, 0141033576},",
+				"   url = {https://www.worldcat.org/oclc/706020998},",
+				"   abstract = {In this work the author, a recipient of the Nobel Prize in Economic Sciences for his seminal work in psychology that challenged the rational model of judgment and decision making, has brought together his many years of research and thinking in one book. He explains the two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. He exposes the extraordinary capabilities, and also the faults and biases, of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and behavior. He reveals where we can and cannot trust our intuitions and how we can tap into the benefits of slow thinking. He offers practical and enlightening insights into how choices are made in both our business and our personal lives, and how we can use different techniques to guard against the mental glitches that often get us into trouble. This author's work has transformed cognitive psychology and launched the new fields of behavioral economics and happiness studies. In this book, he takes us on a tour of the mind and explains the two systems that drive the way we think and the way we make choices},",
+				"   urldate = {2019-12-14},",
+				"   author = {Kahneman, Daniel, 1934-}",
+				"}"
+			],
+			"csl": {
+				"ISBN": "9780374275631, 0374275637, 9780374533557, 0374533555, 9780606275644, 9780141033570, 0606275649, 0141033576",
+				"URL": "https://www.worldcat.org/oclc/706020998",
+				"abstract": "In this work the author, a recipient of the Nobel Prize in Economic Sciences for his seminal work in psychology that challenged the rational model of judgment and decision making, has brought together his many years of research and thinking in one book. He explains the two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. He exposes the extraordinary capabilities, and also the faults and biases, of fast thinking, and reveals the pervasive influence of intuitive impressions on our thoughts and behavior. He reveals where we can and cannot trust our intuitions and how we can tap into the benefits of slow thinking. He offers practical and enlightening insights into how choices are made in both our business and our personal lives, and how we can use different techniques to guard against the mental glitches that often get us into trouble. This author’s work has transformed cognitive psychology and launched the new fields of behavioral economics and happiness studies. In this book, he takes us on a tour of the mind and explains the two systems that drive the way we think and the way we make choices",
+				"accessed": {
+					"date-parts": [
+						[
+							2019,
+							12,
+							14
+						]
+					]
+				},
+				"author": [
+					{
+						"family": "Kahneman",
+						"given": "Daniel"
+					}
+				],
+				"edition": "1st ed",
+				"id": "isbn:978-0374533557",
+				"publisher-place": "New York",
+				"title": "Thinking, fast and slow",
+				"type": "book",
+				"issued": {
+					"date-parts": [
+						[
+							2011
+						]
+					]
+				}
+			}
+		},
+		"doi:10.1037/a0028240": {
+			"fetched": "2019-12-14T11:57:20.283Z",
+			"bibtex": [
+				"",
+				"@article{muldoon_longitudinal_2013,",
+				"   title = {A longitudinal analysis of estimation, counting skills, and mathematical ability across the first school year.},",
+				"   volume = {49},",
+				"   issn = {1939-0599, 0012-1649},",
+				"   url = {http://doi.apa.org/getdoi.cfm?doi=10.1037/a0028240},",
+				"   doi = {10.1037/a0028240},",
+				"   language = {en},",
+				"   number = {2},",
+				"   urldate = {2019-12-14},",
+				"   journal = {Developmental Psychology},",
+				"   author = {Muldoon, Kevin and Towse, John and Simms, Victoria and Perra, Oliver and Menzies, Victoria},",
+				"   year = {2013},",
+				"   pages = {250--257}",
+				"}"
+			],
+			"csl": {
+				"DOI": "10.1037/a0028240",
+				"ISSN": "1939-0599, 0012-1649",
+				"URL": "http://doi.apa.org/getdoi.cfm?doi=10.1037/a0028240",
+				"accessed": {
+					"date-parts": [
+						[
+							2019,
+							12,
+							14
+						]
+					]
+				},
+				"author": [
+					{
+						"family": "Muldoon",
+						"given": "Kevin"
+					},
+					{
+						"family": "Towse",
+						"given": "John"
+					},
+					{
+						"family": "Simms",
+						"given": "Victoria"
+					},
+					{
+						"family": "Perra",
+						"given": "Oliver"
+					},
+					{
+						"family": "Menzies",
+						"given": "Victoria"
+					}
+				],
+				"container-title": "Developmental Psychology",
+				"id": "doi:10.1037/a0028240",
+				"issue": "2",
+				"issued": {
+					"date-parts": [
+						[
+							2013
+						]
+					]
+				},
+				"page": "250-257",
+				"title": "A longitudinal analysis of estimation, counting skills, and mathematical ability across the first school year.",
+				"type": "article-journal",
+				"volume": "49"
+			}
 		}
 	}
 }
