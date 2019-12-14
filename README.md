@@ -1,5 +1,5 @@
 ---
-title: "Automatic citation extraction from URLs (draft)"
+title: "Automatic citation extraction from URLs"
 author: |
     phiresky
 date: 2019-12-13

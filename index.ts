@@ -1,25 +1,45 @@
 /// <reference path="untyped.d.ts" />
 
+import { execFileSync } from "child_process";
 import * as fs from "fs";
+import fetch from "node-fetch";
 import {
+	Attr,
 	Cite,
-	Elt,
+	FilterActionAsync,
+	filterAsync,
 	Format,
 	Link,
-	Space,
-	filterAsync,
-	FilterAction,
-	FilterActionAsync,
-	rawToMeta,
 	metaMapToRaw,
-	Str,
-	attributes,
-	Superscript,
-	Attr
+	PandocJson,
+	rawToMeta,
+	Space,
+	Superscript
 } from "pandoc-filter";
 import { isURL } from "./util";
-import { execFileSync } from "child_process";
-import fetch from "node-fetch";
+
+/** config options loaded from frontmatter */
+export type Configuration = {
+	/**
+	 * if all-links then convert all links to citations. otherwise only parse pandoc citation syntax
+	 */
+	url2cite?: "all-links" | "citation-only";
+	/**
+	 * only relevant for links converted to citations.
+	 *
+	 * - cite-only: [text](href) becomes [@href]
+	 * - sup: [text](href) becomes [text](href)^[@href]
+	 * - normal: [text](href) becomes [text [@href]](href)
+	 *
+	 *  default: sup if html else normal
+	 */
+	"url2cite-link-output"?: "cite-only" | "sup" | "normal";
+	/**
+	 * location of the cache file
+	 * default: ./citation-cache.json (relative to invocation directory of pandoc)
+	 */
+	"url2cite-cache"?: string;
+};
 
 /** type of the citation-cache.json file */
 type Cache = {
@@ -88,14 +108,6 @@ export class Url2Cite {
 
 	citekeys: { [key: string]: string } = {};
 
-	constructor() {
-		try {
-			this.cache = JSON.parse(
-				fs.readFileSync(this.citationCachePath, "utf8")
-			);
-		} catch {}
-	}
-
 	async getCslForUrlCached(url: string) {
 		if (url in this.cache.urls) return;
 		this.cache.urls[url] = await getCslForUrl(url);
@@ -157,9 +169,7 @@ export class Url2Cite {
 				citation.citationId = url;
 			}
 		} else if (el.t === "Link") {
-			const meta = metaMapToRaw(m);
-			if (meta.url2cite && typeof meta.url2cite !== "string")
-				throw Error("unsupported value of url2cite");
+			const meta = metaMapToRaw(m) as Configuration;
 			const [[id, classes, kv], inline, [url, targetTitle]] = el.c;
 
 			if (
@@ -225,7 +235,16 @@ export class Url2Cite {
 		}
 	};
 
-	async transform(data: any, format: Format) {
+	async transform(data: PandocJson, format: Format) {
+		try {
+			const m = metaMapToRaw(data.meta) as Configuration;
+			if (m["url2cite-cache"])
+				this.citationCachePath = String(m["url2cite-cache"]);
+			this.cache = JSON.parse(
+				fs.readFileSync(this.citationCachePath, "utf8")
+			);
+		} catch {}
+
 		// untyped https://github.com/mvhenderson/pandoc-filter-node/issues/9
 		data = await filterAsync(data, this.extractCiteKeys, format);
 		data = await filterAsync(data, this.astTransformer, format);
