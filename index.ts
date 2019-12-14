@@ -1,6 +1,5 @@
 /// <reference path="untyped.d.ts" />
 
-import cjs from "citation-js";
 import * as fs from "fs";
 import {
 	Cite,
@@ -12,15 +11,33 @@ import {
 	FilterAction,
 	FilterActionAsync,
 	rawToMeta,
-	metaMapToRaw
+	metaMapToRaw,
+	Str,
+	attributes,
+	Superscript,
+	Attr
 } from "pandoc-filter";
 import { isURL } from "./util";
+import { execFileSync } from "child_process";
+import fetch from "node-fetch";
 
 /** type of the citation-cache.json file */
 type Cache = {
 	_info: string;
 	urls: { [url: string]: { fetched: string; bibtex: string[]; csl: any } };
 };
+
+async function bibtex2csl(bibtex: string) {
+	const res = execFileSync(
+		"pandoc-citeproc",
+		["--bib2json", "--format=biblatex"],
+		{
+			input: bibtex,
+			encoding: "utf8"
+		}
+	);
+	return JSON.parse(res);
+}
 
 async function getCslForUrl(url: string) {
 	// uses zotero extractors from https://github.com/zotero/translators to get information from URLs
@@ -44,20 +61,14 @@ async function getCslForUrl(url: string) {
 		);
 	}
 	const bibtex = await res.text();
-	let cbb;
-	try {
-		// Citoid does not have CSL output, so convert bibtex to CSL JSON format
-		cbb = new cjs(bibtex.replace("{\\textbar}", "--")); // https://github.com/larsgw/citation.js/issues/194
-	} catch (e) {
-		console.warn("could not parse bibtex: ", bibtex);
-		throw e;
+	const [csl] = await bibtex2csl(bibtex);
+	for (const k of Object.keys(csl)) {
+		// unescape since pandoc-citeproc outputs markdown-escaped text
+		// this regex is not 100% correct, e.g. "\\\[test]"
+		if (typeof csl[k] === "string")
+			csl[k] = csl[k].replace(/\\(?!\\)/g, "");
 	}
-
-	if (cbb.data.length !== 1)
-		throw Error("got != 1 bibtex entries: " + bibtex);
-	cbb.data[0].id = url; // replace server-generated (useless) id with url
-	const [csl] = cbb.get({ format: "real", type: "json", style: "csl" });
-	delete csl._graph; // would be unnecessary bloat in json
+	csl.id = url;
 
 	return {
 		fetched: new Date().toJSON(),
@@ -132,7 +143,7 @@ export class Url2Cite {
 	 * - replaces links with citations if `all-links` is active or they are marked with `url2cite` class/title
 	 * - replaces citekeys with urls, fetches missing citations and writes them to cache
 	 */
-	astTransformer: FilterActionAsync = async (el, _outputFormat, m) => {
+	astTransformer: FilterActionAsync = async (el, outputF, m) => {
 		if (el.t === "Cite") {
 			const [citations, _inline] = el.c;
 			for (const citation of citations) {
@@ -167,9 +178,10 @@ export class Url2Cite {
 					// probably a relative URL. Keep it as is
 					return;
 				}
+				await this.getCslForUrlCached(url);
+
 				// here we basically convert a link of form [text](href)
 				// to one of form [text [@{href}]](href)
-				await this.getCslForUrlCached(url);
 				const cite = Cite(
 					[
 						{
@@ -185,14 +197,30 @@ export class Url2Cite {
 					],
 					[]
 				);
-
-				const e: Elt<"Link"> = Link(
-					[id, classes, kv],
-					[...inline, Space(), cite],
-					[url, targetTitle]
-				);
-
-				return e;
+				const defFormat = outputF === "html" ? "sup" : "normal";
+				const outputFormat = meta["url2cite-link-output"] || defFormat;
+				if (outputFormat === "cite-only") return cite;
+				const attr: Attr = [
+					id,
+					classes,
+					[
+						...kv,
+						["cite-meta", JSON.stringify(this.cache.urls[url].csl)]
+					]
+				];
+				if (outputFormat === "sup")
+					return [
+						Link(attr, [...inline], [url, targetTitle]),
+						Superscript([cite])
+					];
+				else if (outputFormat === "normal") {
+					return Link(
+						attr,
+						[...inline, Space(), cite],
+						[url, targetTitle]
+					);
+				}
+				throw Error(`Unknown output format ${outputFormat}`);
 			}
 		}
 	};

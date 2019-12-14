@@ -1,6 +1,6 @@
 {
 	"name": "pandoc-url2cite",
-	"version": "0.5.13",
+	"version": "0.5.14",
 	"homepage": "https://github.com/phiresky/pandoc-url2cite",
 	"main": "dist/index.js",
 	"bin": {
@@ -8,6 +8,7 @@
 	},
 	"dependencies": {
 		"@types/node": "^12.12.17",
+		"@types/node-fetch": "^2.5.4",
 		"citation-js": "^0.4.10",
 		"node-fetch": "^2.6.0",
 		"pandoc-filter": "npm:@phiresky/pandoc-filter@^2.0.0"

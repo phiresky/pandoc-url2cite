@@ -1,6 +1,6 @@
 # Introduction
 
-The GAN was first introduced in @gan.
+The GAN was first introduced in [@gan].
 
 # References
 
