@@ -1,4 +1,4 @@
 export function isURL(s: string) {
-	// dumb test but should be good enough, can't handle missing protocol anyways
-	return /^https?:\/\/|^doi:/.test(s);
+	// incomplete test. in theory this should match any format recognized by zotero
+	return /^https?:\/\/|^doi:|^isbn:/.test(s);
 }
