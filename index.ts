@@ -15,6 +15,7 @@ import {
 	rawToMeta,
 	Space,
 	Superscript,
+	PandocMetaValue,
 } from "pandoc-filter";
 import { isURL } from "./util";
 
@@ -39,6 +40,10 @@ export type Configuration = {
 	 * default: ./citation-cache.json (relative to invocation directory of pandoc)
 	 */
 	"url2cite-cache"?: string;
+	/**
+	 * Whether to allow citations without an accompanying url.
+	 */
+	"url2cite-allow-dangling-citations"?: boolean;
 };
 
 /** type of the citation-cache.json file */
@@ -54,7 +59,7 @@ async function bibtex2csl(bibtex: string) {
 		{
 			input: bibtex,
 			encoding: "utf8",
-		}
+		},
 	);
 	return JSON.parse(res);
 }
@@ -71,13 +76,13 @@ async function getCslForUrl(url: string) {
 	console.warn("fetching citation from url", url);
 	const res = await fetch(
 		`https://en.wikipedia.org/api/rest_v1/data/citation/bibtex/${encodeURIComponent(
-			url
-		)}`
+			url,
+		)}`,
 	);
 
 	if (!res.ok) {
 		throw Error(
-			`could not fetch citation from ${url}: ${await res.text()}`
+			`could not fetch citation from ${url}: ${await res.text()}`,
 		);
 	}
 	const bibtex = await res.text();
@@ -156,12 +161,17 @@ export class Url2Cite {
 	 * - replaces citekeys with urls, fetches missing citations and writes them to cache
 	 */
 	astTransformer: FilterActionAsync = async (el, outputF, m) => {
+		const meta = metaMapToRaw(m) as Configuration;
 		if (el.t === "Cite") {
 			const [citations, _inline] = el.c;
 			for (const citation of citations) {
 				const id = citation.citationId;
 				const url = isURL(id) ? id : this.citekeys[id];
-				if (!url) throw `Error: Could not find URL for @${id}`;
+				if (!url) {
+					if (meta["url2cite-allow-dangling-citations"] === false)
+						continue;
+					else throw `Error: could not find URL for @${id}`;
+				}
 				if (typeof url !== "string")
 					throw Error(`url for ${id} is not string: ${url}`);
 				await this.getCslForUrlCached(url);
@@ -169,7 +179,6 @@ export class Url2Cite {
 				citation.citationId = url;
 			}
 		} else if (el.t === "Link") {
-			const meta = metaMapToRaw(m) as Configuration;
 			const [[id, classes, kv], inline, [url, targetTitle]] = el.c;
 
 			if (
@@ -205,7 +214,7 @@ export class Url2Cite {
 							citationHash: 0,
 						},
 					],
-					[]
+					[],
 				);
 				const defFormat = outputF === "html" ? "sup" : "normal";
 				const outputFormat = meta["url2cite-link-output"] || defFormat;
@@ -227,7 +236,7 @@ export class Url2Cite {
 					return Link(
 						attr,
 						[...inline, Space(), cite],
-						[url, targetTitle]
+						[url, targetTitle],
 					);
 				}
 				throw Error(`Unknown output format ${outputFormat}`);
@@ -241,7 +250,7 @@ export class Url2Cite {
 			if (m["url2cite-cache"])
 				this.citationCachePath = String(m["url2cite-cache"]);
 			this.cache = JSON.parse(
-				fs.readFileSync(this.citationCachePath, "utf8")
+				fs.readFileSync(this.citationCachePath, "utf8"),
 			);
 		} catch {}
 
@@ -249,18 +258,32 @@ export class Url2Cite {
 		data = await filter(data, this.extractCiteKeys, format);
 		data = await filter(data, this.astTransformer, format);
 		console.warn(
-			`got all ${Object.keys(this.cache.urls).length} citations from URLs`
+			`got all ${
+				Object.keys(this.cache.urls).length
+			} citations from URLs`,
 		);
-		// add all cached references to the frontmatter. pandoc-citeproc will handle (ignore) unused keys.
-		data.meta.references = rawToMeta(
-			Object.entries(this.cache.urls).map(([url, { csl }]) => csl)
-		);
+		// add all cached references to the frontmatter. pandoc-citeproc will handle
+		// (ignore) unused keys. Concatenate with existing references if any exist.
+		const existingRefs =
+			data.meta.references !== undefined &&
+			data.meta.references.t === "MetaList"
+				? data.meta.references.c
+				: [];
+		const refs = rawToMeta(
+			Object.entries(this.cache.urls).map(([url, { csl }]) => csl),
+		) as { t: "MetaList"; c: PandocMetaValue[] };
+
+		data.meta.references = {
+			t: "MetaList",
+			c: refs.c.concat(existingRefs),
+		};
+
 		return data;
 	}
 	writeCache() {
 		fs.writeFileSync(
 			this.citationCachePath,
-			JSON.stringify(this.cache, null, "\t")
+			JSON.stringify(this.cache, null, "\t"),
 		);
 	}
 }
