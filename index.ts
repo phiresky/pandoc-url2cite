@@ -174,7 +174,7 @@ export class Url2Cite {
 				const url = isURL(id) ? id : this.citekeys[id];
 				if (!url) {
 					if (meta["url2cite-allow-dangling-citations"]) continue;
-					else throw `Error: could not find URL for @${id}`;
+					else throw Error(`Could not find URL for @${id}.`);
 				}
 				if (typeof url !== "string")
 					throw Error(`url for ${id} is not string: ${url}`);
