@@ -7,19 +7,21 @@
 		"pandoc-url2cite": "dist/pandoc-url2cite.js"
 	},
 	"dependencies": {
-		"@types/node": "^12.12.17",
-		"@types/node-fetch": "^2.5.4",
-		"citation-js": "^0.4.10",
+		"@types/node": "^13.13.5",
+		"@types/node-fetch": "^2.5.7",
+		"citation-js": "^0.5.0-alpha.5",
 		"node-fetch": "^2.6.0",
-		"pandoc-filter": "npm:@phiresky/pandoc-filter@^2.0.0"
+		"pandoc-filter": "^2.0.0"
 	},
 	"devDependencies": {
-		"ts-node": "^8.5.4",
-		"typescript": "^3.7.3"
+		"prettier": "^2.0.5",
+		"ts-node": "^8.10.1",
+		"typescript": "^3.8.3"
 	},
 	"prettier": {
 		"tabWidth": 4,
-		"useTabs": true
+		"useTabs": true,
+		"trailingComma": "all"
 	},
 	"types": "dist/index.d.ts",
 	"files": [
