@@ -19,14 +19,18 @@ import {
 } from "pandoc-filter";
 import { isURL } from "./util";
 
-/** config options loaded from frontmatter */
+/**
+ * config options loaded from markdown frontmatter
+ *
+ * can also be specified as a command line option, e.g. `pandoc -V url2cite=all-links`
+ **/
 export type Configuration = {
 	/**
 	 * if all-links then convert all links to citations. otherwise only parse pandoc citation syntax
 	 */
 	url2cite?: "all-links" | "citation-only";
 	/**
-	 * only relevant for links converted to citations.
+	 * only relevant for links converted to citations (if urlcite=all-links)
 	 *
 	 * - cite-only: [text](href) becomes [@href]
 	 * - sup: [text](href) becomes [text](href)^[@href]
@@ -41,7 +45,8 @@ export type Configuration = {
 	 */
 	"url2cite-cache"?: string;
 	/**
-	 * Whether to allow citations without an accompanying url.
+	 * Whether to allow citations without an accompanying url. Useful for manual citations that aren't
+	 * automatically found by url2cite and are managed manually or with a different tool
 	 */
 	"url2cite-allow-dangling-citations"?: boolean;
 };
@@ -168,8 +173,7 @@ export class Url2Cite {
 				const id = citation.citationId;
 				const url = isURL(id) ? id : this.citekeys[id];
 				if (!url) {
-					if (meta["url2cite-allow-dangling-citations"] === false)
-						continue;
+					if (meta["url2cite-allow-dangling-citations"]) continue;
 					else throw `Error: could not find URL for @${id}`;
 				}
 				if (typeof url !== "string")
