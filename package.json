@@ -7,18 +7,18 @@
 		"pandoc-url2cite": "dist/pandoc-url2cite.js"
 	},
 	"dependencies": {
-		"@types/node": "^13.13.5",
+		"@types/node": "^14.11.2",
 		"@types/node-fetch": "^2.5.7",
-		"citation-js": "^0.5.0-alpha.5",
-		"node-fetch": "^2.6.0",
-		"pandoc-filter": "^2.0.0"
+		"citation-js": "^0.5.0-alpha.7",
+		"node-fetch": "^2.6.1",
+		"pandoc-filter": "^2.0.2"
 	},
 	"devDependencies": {
-		"husky": ">=4",
-		"lint-staged": ">=10",
-		"prettier": "^2.0.5",
-		"ts-node": "^8.10.1",
-		"typescript": "^3.8.3"
+		"husky": ">=4.3.0",
+		"lint-staged": ">=10.4.0",
+		"prettier": "^2.1.2",
+		"ts-node": "^9.0.0",
+		"typescript": "^4.0.3"
 	},
 	"prettier": {
 		"tabWidth": 4,
