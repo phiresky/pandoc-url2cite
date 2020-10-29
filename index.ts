@@ -58,14 +58,10 @@ type Cache = {
 };
 
 async function bibtex2csl(bibtex: string) {
-	const res = execFileSync(
-		"pandoc-citeproc",
-		["--bib2json", "--format=biblatex"],
-		{
-			input: bibtex,
-			encoding: "utf8",
-		},
-	);
+	const res = execFileSync("pandoc", ["--from=biblatex", "--to=csljson"], {
+		input: bibtex,
+		encoding: "utf8",
+	});
 	return JSON.parse(res);
 }
 

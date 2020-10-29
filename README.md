@@ -34,7 +34,7 @@ Compiling this file with this command
 
 ```bash
 pandoc \
-    --filter=pandoc-url2cite --filter=pandoc-citeproc \
+    --filter=pandoc-url2cite --citeproc \
     --csl ieee-with-url.csl \
     minimal.md -o minimal.pdf
 ```
