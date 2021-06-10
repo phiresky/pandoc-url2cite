@@ -54,7 +54,7 @@ For a longer example, you can look at the source of this file itself, which is b
 
 Install this package globally using `npm install -g pandoc-url2cite`.
 
-Then, add `--filter=pandoc-url2cite` to your pandoc command (before pandoc-citeproc, see the minimal example above).
+Then, add `--filter=pandoc-url2cite` to your pandoc command (before `--citeproc`, see the minimal example above).
 
 Alternatively, clone [this repo][repo] somewhere, then install the dependencies using `npm ci install`.
 
@@ -73,6 +73,10 @@ url2cite allows multiple ways to cite:
     Then add the URLs with the usual "link reference" syntax to the bottom of your document in its own paragraph:
 
     `[@alexnet]: https://...`
+
+    You can also use the URL directly inline by using the [flexible citation syntax](https://github.com/jgm/pandoc/issues/6026) introduced in Pandoc 2.14:
+
+    `PPO [@{https://github.com/jgm/pandoc/issues/6026}] is a policy gradient method.`
 
 2. Convert all links to citations
 
@@ -110,8 +114,8 @@ All citation data is cached (permanently) as bibtex as well as CSL to `citation-
 
 # Related Projects
 
-* [Manubot](https://manubot.org/) is a more integrated and opinionated tool for creating scientific documents that has a similar method for creating citations without the hassle.
-* [pandoc-url2cite-hs](https://github.com/Aver1y/pandoc-url2cite-hs) is a Haskell port of this tool (mostly compatible)
+-   [Manubot](https://manubot.org/) is a more integrated and opinionated tool for creating scientific documents that has a similar method for creating citations without the hassle.
+-   [pandoc-url2cite-hs](https://github.com/Aver1y/pandoc-url2cite-hs) is a Haskell port of this tool (mostly compatible)
 
 # Longer Example
 
