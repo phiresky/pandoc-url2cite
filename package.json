@@ -39,5 +39,7 @@
 	},
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx,css}": "prettier --write"
-	}
+	},
+	"engines": { "node": ">=14" },
+	"engineStrict": true
 }
