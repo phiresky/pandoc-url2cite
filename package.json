@@ -1,6 +1,6 @@
 {
 	"name": "pandoc-url2cite",
-	"version": "0.6.7",
+	"version": "0.6.8",
 	"homepage": "https://github.com/phiresky/pandoc-url2cite",
 	"main": "dist/index.js",
 	"bin": {
@@ -40,6 +40,8 @@
 	"lint-staged": {
 		"*.{js,jsx,ts,tsx,css}": "prettier --write"
 	},
-	"engines": { "node": ">=14" },
+	"engines": {
+		"node": ">=14"
+	},
 	"engineStrict": true
 }
