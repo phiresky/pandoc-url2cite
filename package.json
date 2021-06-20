@@ -1,6 +1,6 @@
 {
 	"name": "pandoc-url2cite",
-	"version": "0.6.8",
+	"version": "0.6.9",
 	"homepage": "https://github.com/phiresky/pandoc-url2cite",
 	"main": "dist/index.js",
 	"bin": {

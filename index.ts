@@ -151,7 +151,7 @@ export class Url2Cite {
 				el.c[1].t === "Str" &&
 				el.c[1].c === ":"
 			) {
-				const sp = el.c[2].t === "Space" ? 3 : 2;
+				const sp = ["Space", "SoftBreak"].includes(el.c[2].t) ? 3 : 2;
 				const v = el.c[sp];
 				if (v.t === "Str") {
 					// paragraph starts with [@something]: something
@@ -165,6 +165,8 @@ export class Url2Cite {
 					el.c = el.c.slice(sp + 1);
 					if (el.c.length > 0 && el.c[0].t === "SoftBreak")
 						el.c.shift();
+				} else {
+					throw Error(`unknown thing in url2cite link: ${v.t} (${JSON.stringify(el)})`)
 				}
 			}
 			return el;
