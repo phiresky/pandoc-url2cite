@@ -65,18 +65,38 @@ type CSL = {
 };
 // todo: async
 async function bibtex2csl(bibtex: string) {
-	const res = execFileSync("pandoc", ["--from=biblatex", "--to=csljson"], {
-		input: bibtex,
-		encoding: "utf8",
-	});
-	return JSON.parse(res) as CSL[];
+	try {
+		const res = execFileSync(
+			"pandoc",
+			["--from=biblatex", "--to=csljson"],
+			{
+				input: bibtex,
+				encoding: "utf8",
+			},
+		);
+		return JSON.parse(res) as CSL[];
+	} catch (e) {
+		console.error(
+			`Could not convert the following bibtex to csl:\n${bibtex}`,
+		);
+		throw e;
+	}
 }
 async function csl2bibtex(csl: CSL[]): Promise<string> {
-	const res = execFileSync("pandoc", ["--from=csljson", "--to=biblatex"], {
-		input: JSON.stringify(csl),
-		encoding: "utf8",
-	});
-	return res;
+	try {
+		const res = execFileSync(
+			"pandoc",
+			["--from=csljson", "--to=biblatex"],
+			{
+				input: JSON.stringify(csl),
+				encoding: "utf8",
+			},
+		);
+		return res;
+	} catch (e) {
+		console.error(`Could not convert the following csl to bibtex:\n${csl}`);
+		throw e;
+	}
 }
 
 async function getCslForUrl(url: string) {
@@ -166,12 +186,34 @@ export class Url2Cite {
 					if (el.c.length > 0 && el.c[0].t === "SoftBreak")
 						el.c.shift();
 				} else {
-					throw Error(`unknown thing in url2cite link: ${v.t} (${JSON.stringify(el)})`)
+					throw Error(
+						`unknown thing in url2cite link: ${
+							v.t
+						} (${JSON.stringify(el)})`,
+					);
 				}
 			}
 			return el;
 		}
 	};
+	extractRemoveCodeBlocks: FilterActionAsync = async (el, outputF, m) => {
+		if (el.t === "CodeBlock") {
+			const [[id, classes, attrs], content] = el.c;
+			if (classes.includes("url2cite-bibtex")) {
+				const csls = await bibtex2csl(content);
+				for (const csl of csls) {
+					this.cache.urls[csl.id] = {
+						fetched: new Date().toJSON(),
+						bibtex: [],
+						csl,
+					};
+				}
+				await this.writeCache();
+				return [];
+			}
+		}
+	};
+
 	/**
 	 * transform the pandoc document AST
 	 * - replaces links with citations if `all-links` is active or they are marked with `url2cite` class/title
@@ -258,20 +300,6 @@ export class Url2Cite {
 				}
 				throw Error(`Unknown output format ${outputFormat}`);
 			}
-		} else if (el.t === "CodeBlock") {
-			const [[id, classes, attrs], content] = el.c;
-			if (classes.includes("url2cite-bibtex")) {
-				const csls = await bibtex2csl(content);
-				for (const csl of csls) {
-					this.cache.urls[csl.id] = {
-						fetched: new Date().toJSON(),
-						bibtex: [],
-						csl,
-					};
-				}
-				await this.writeCache();
-				return [];
-			}
 		}
 	};
 
@@ -286,6 +314,7 @@ export class Url2Cite {
 		} catch {}
 		// untyped https://github.com/mvhenderson/pandoc-filter-node/issues/9
 		data = await filter(data, this.extractCiteKeys, format);
+		data = await filter(data, this.extractRemoveCodeBlocks, format);
 		data = await filter(data, this.astTransformer, format);
 		console.warn(
 			`got all ${
