@@ -202,6 +202,9 @@ export class Url2Cite {
 			if (classes.includes("url2cite-bibtex")) {
 				const csls = await bibtex2csl(content);
 				for (const csl of csls) {
+					const old = this.cache.urls[csl.id];
+					if (JSON.stringify(old.csl) === JSON.stringify(csl))
+						continue;
 					this.cache.urls[csl.id] = {
 						fetched: new Date().toJSON(),
 						bibtex: [],
