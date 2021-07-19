@@ -21,7 +21,8 @@ async function go() {
 
 	// parse AST from stdin
 	let data: PandocJson = JSON.parse(await read(process.stdin));
-	const format = process.argv.length > 2 ? process.argv[2] : "";
+	const format =
+		process.argv.length > 2 && process.argv[2] ? process.argv[2] : "";
 
 	const u2c = new Url2Cite();
 	data = await u2c.transform(data, format);

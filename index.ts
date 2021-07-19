@@ -122,6 +122,7 @@ async function getCslForUrl(url: string) {
 	}
 	const bibtex = await res.text();
 	const [csl] = await bibtex2csl(bibtex);
+	if (!csl) throw Error(`fetching ${url} did not yield any bibtex`);
 	for (const k of Object.keys(csl) as (keyof CSL)[]) {
 		// unescape since pandoc-citeproc outputs markdown-escaped text
 		// this regex is not 100% correct, e.g. "\\\[test]"
@@ -166,29 +167,31 @@ export class Url2Cite {
 		if (el.t === "Para") {
 			while (
 				el.c.length >= 3 &&
+				el.c[0] &&
+				el.c[1] &&
 				el.c[0].t === "Cite" &&
 				el.c[0].c[0].length === 1 &&
 				el.c[1].t === "Str" &&
 				el.c[1].c === ":"
 			) {
-				const sp = ["Space", "SoftBreak"].includes(el.c[2].t) ? 3 : 2;
+				const sp = ["Space", "SoftBreak"].includes(el.c[2]!.t) ? 3 : 2;
 				const v = el.c[sp];
-				if (v.t === "Str") {
+				if (v && v.t === "Str") {
 					// paragraph starts with [@something]: something
 					// save info to citekeys and remove from paragraph
-					const key = el.c[0].c[0][0].citationId;
+					const key = el.c[0].c[0][0]!.citationId;
 					const url = v.c;
 					if (key in this.citekeys)
 						console.warn("warning: duplicate citekey", key);
 					this.citekeys[key] = url;
 					// found citation, add it to citekeys and remove it from document
 					el.c = el.c.slice(sp + 1);
-					if (el.c.length > 0 && el.c[0].t === "SoftBreak")
+					if (el.c.length > 0 && el.c[0]?.t === "SoftBreak")
 						el.c.shift();
 				} else {
 					throw Error(
 						`unknown thing in url2cite link: ${
-							v.t
+							v?.t
 						} (${JSON.stringify(el)})`,
 					);
 				}
@@ -203,7 +206,7 @@ export class Url2Cite {
 				const csls = await bibtex2csl(content);
 				for (const csl of csls) {
 					const old = this.cache.urls[csl.id];
-					if (JSON.stringify(old.csl) === JSON.stringify(csl))
+					if (old && JSON.stringify(old.csl) === JSON.stringify(csl))
 						continue;
 					this.cache.urls[csl.id] = {
 						fetched: new Date().toJSON(),
@@ -281,13 +284,11 @@ export class Url2Cite {
 				const defFormat = outputF === "html" ? "sup" : "normal";
 				const outputFormat = meta["url2cite-link-output"] || defFormat;
 				if (outputFormat === "cite-only") return cite;
+				const cached = this.cache.urls[url]?.csl;
 				const attr: Attr = [
 					id,
 					classes,
-					[
-						...kv,
-						["cite-meta", JSON.stringify(this.cache.urls[url].csl)],
-					],
+					[...kv, ["cite-meta", JSON.stringify(cached)]],
 				];
 				if (outputFormat === "sup")
 					return [
@@ -357,7 +358,7 @@ export class Url2Cite {
 		for (const url in this.cache.urls) {
 			const res = this.cache.urls[url];
 			// const csl = { ...res.csl, id: url }; // replace url, convert to bibtex
-			csls.push(res.csl);
+			csls.push(res!.csl);
 		}
 		const bibContent = await csl2bibtex(csls);
 		await fs.writeFile(fname, bibContent);
