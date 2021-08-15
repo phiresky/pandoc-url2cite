@@ -239,6 +239,10 @@ export class Url2Cite {
 				}
 				if (typeof url !== "string")
 					throw Error(`url for ${id} is not string: ${url}`);
+				if (url.startsWith("raw:")) {
+					// ignore, same syntax used in manubot
+					continue;
+				}
 				await this.getCslForUrlCached(url, escapeIds);
 				// replace the citation id with the url
 				citation.citationId = escapeURL(url, escapeIds);
