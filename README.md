@@ -98,19 +98,48 @@ pandoc-url2cite is based on the work of the [Zotero] developers. Zotero has a se
 
 All citation data is cached (permanently) as bibtex as well as CSL to `citation-cache.json`. This is both to improve performance and to make sure references stay the same forever after the initial fetch, as well as to avoid problems if the API might be down in the future. This also means that errors in the citation data can be fixed manually, although if you find you need to do a lot of manual tweaking you might again be better off with Zotero.
 
-# Limitations
+# Special Cases
 
-1.  Currently, extracting the metadata from direct URLs of full text PDFs does not work, so you will need to use the URL of an overview / abstract page etc. I'm not sure why, since this does work in Zotero. [More info might be here](https://github.com/zotero/translation-server/issues/70).
-2.  Currently, this filter only works if you use pandoc-citeproc, because the citations are written directly into the document metadata instead of into a bibtex file. If you want to use natbib or biblatex for citations, this filter currently won't work. Using citeproc has the disadvantage that it is somewhat less configurable than the "real" LaTeX citation text generators and the CSL language has some limitations. For example, the [bibtex "alpha"](https://www.overleaf.com/learn/latex/Bibtex_bibliography_styles) style sometimes used in Germany can't be described in CSL.
+## Mixing manual references and generated URL-based ones
 
-    To make it work with biblatex, this script would need to write out a \*.bib file somewhere temporarily and reference that in the latex code.
 
-3.  Some websites just have wrong meta information. For example, citationstyles.org has set "Your Name" as the website author in their [Open Graph](https://ogp.me/) metadata.
-4.  Using URLs directly as citekeys (e.g. `[@https://google.com]` does not work because of pandoc parsing, see [this issue](https://github.com/jgm/pandoc-citeproc/issues/308). But it does work for ISBNs and DOIs:
+Right now there's four ways you can use url2cite in combination with "manual" citations:
 
-        The book [@isbn:978-0374533557, pp. 15-17] is interesting.
+1. Prefix the cite key with `raw:`. e.g. `[@raw:foobar]`. These are ignored by url2cite, and you can add the reference however you want in your `--bibliography=` file.
+2. set `url2cite-allow-dangling-citations=true`. That suppresses the `Could not find URL for @foobar.` error and makes url2cite just ignore any cite keys that aren't aliased to an url.
+3. Use an URL as a cite-key. Doesn't need to have a DOI or be a paper, just any website that's relevant to the work is fine as long as Zotero understands it. Then manually adjust the CSL entry url2cite generates in `citation-cache.json`.
+4. Use an URL as a cite-key like in (3), but directly add the bibtex in a code block with language `url2cite-bibtex` anywhere:
+    `````markdown
+   see also @{https://github.com/DLR-RM/stable-baselines3}.
 
-    See [this example](https://github.com/phiresky/pandoc-url2cite/blob/master/example/doi-isbn.md).
+    ```url2cite-bibtex
+    @misc{https://github.com/DLR-RM/stable-baselines3,
+    author = {Raffin, Antonin and Hill, Ashley and Ernestus, Maximilian and Gleave, Adam and Kanervisto, Anssi and Dormann, Noah},
+    title = {Stable Baselines3},
+    year = {2019},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/DLR-RM/stable-baselines3}},
+    }
+    ```
+    `````
+
+## Using other kinds of unique IDs
+
+pandoc-url2cite also supports ISBNs and DOIs:
+
+    The book [@isbn:978-0374533557, pp. 15-17] is interesting.
+
+See [this example](https://github.com/phiresky/pandoc-url2cite/blob/master/example/doi-isbn.md).
+
+## Using without citeproc (with natbib/biblatex)
+
+If you don't want to use citeproc, you can set `url2cite-output-bib=foo.bib` to make url2cite output a bibtex file for consumption by your preferred LaTeX tool.
+
+## Limitations
+
+1.  Currently, extracting the metadata from direct URLs of full text PDFs does not work, so you will need to use the URL of an overview / abstract page etc. I'm not sure why, since this does work in Zotero. [More info might be here](https://github.com/zotero/translation-server/issues/70)
+2.  Some websites just have wrong meta information. For example, citationstyles.org has set "Your Name" as the website author in their [Open Graph](https://ogp.me/) metadata. You can manually modify the `citation-cache.json` file to fix / change anything.
 
 # Related Projects
 
