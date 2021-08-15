@@ -98,7 +98,11 @@ pandoc-url2cite is based on the work of the [Zotero] developers. Zotero has a se
 
 All citation data is cached (permanently) as bibtex as well as CSL to `citation-cache.json`. This is both to improve performance and to make sure references stay the same forever after the initial fetch, as well as to avoid problems if the API might be down in the future. This also means that errors in the citation data can be fixed manually, although if you find you need to do a lot of manual tweaking you might again be better off with Zotero.
 
-# Special Cases
+# Configuration / Special Cases
+
+## Advanced Configuration
+
+You can see a list of all supported config options in [config.d.ts](config.d.ts).
 
 ## Mixing manual references and generated URL-based ones
 
