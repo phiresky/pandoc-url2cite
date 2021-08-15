@@ -202,7 +202,7 @@ export class Url2Cite {
 				const url = isURL(id) ? id : this.citekeys[id];
 				if (!url) {
 					if (meta["url2cite-allow-dangling-citations"]) continue;
-					else throw Error(`Could not find URL for @${id}.`);
+					else throw Error(`Could not find URL for @${id}. If you want to mix url2cite with manual non-URL based references either prefix the citekeys with "raw:" or set url2cite-allow-dangling-citations=true.`);
 				}
 				if (typeof url !== "string")
 					throw Error(`url for ${id} is not string: ${url}`);
