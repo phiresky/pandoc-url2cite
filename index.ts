@@ -246,7 +246,7 @@ export class Url2Cite {
 								t: "NormalCitation",
 							} as any, // wrong typings
 							citationPrefix: [],
-							citationId: escapeURL(url, escapeIds),
+							citationId: url,
 							citationHash: 0,
 						},
 					],
