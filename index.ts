@@ -267,11 +267,11 @@ export class Url2Cite {
 						Superscript([cite]),
 					];
 				else if (outputFormat === "normal") {
-					return Link(
-						attr,
-						[...inline, Space(), cite],
-						[url, targetTitle],
-					);
+					return [
+						Link(attr, [...inline], [url, targetTitle]),
+						Space(),
+						cite,
+					];
 				}
 				throw Error(`Unknown output format ${outputFormat}`);
 			}
